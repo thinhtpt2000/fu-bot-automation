@@ -163,4 +163,4 @@ async def cal_mas(ctx, *, query):
     except ValueError as err:
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
     except WebDriverException:
-        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)
+        await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
