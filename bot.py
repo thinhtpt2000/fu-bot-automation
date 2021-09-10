@@ -6,6 +6,7 @@ from sqlite3 import IntegrityError
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from selenium.common.exceptions import WebDriverException
 
 import automation
 from enum_bot import BotStatus
@@ -51,6 +52,8 @@ async def schedule(ctx):
                                file=discord.File(f'{ctx.author}.png'))
     except ValueError as err:
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
+    except WebDriverException:
+        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)
 
 
 @bot.command(help='Check schedule with Google access token')
@@ -66,6 +69,8 @@ async def schedule_with_token(ctx, access_token=None):
     except RuntimeError as err:
         print(err)
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
+    except WebDriverException:
+        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)
 
 
 @bot.command(help='Create new FAP account')
@@ -157,3 +162,5 @@ async def cal_mas(ctx, *, query):
                                file=discord.File(f'{ctx.author}.png'))
     except ValueError as err:
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
+    except WebDriverException:
+        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)

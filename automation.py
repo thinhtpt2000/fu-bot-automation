@@ -19,11 +19,11 @@ load_dotenv()
 
 def get_headless_options():
     chrome_options = Options()
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    # chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
-    #                             'like Gecko) Chrome/93.0.4577.63 Safari/537.36"')
+    chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
+                                'like Gecko) Chrome/93.0.4577.63 Safari/537.36"')
     chrome_options.binary_location = os.getenv("GOOGLE_CHROME_BIN")
     return chrome_options
 
@@ -39,7 +39,12 @@ async def get_schedule(user_id, email, pwd):
 
     try:
         # 1. Do Google login
-        driver.get("https://accounts.google.com/signin")
+        driver.get("https://stackoverflow.com/users/login")
+        x_path = '/html/body/div[3]/div[2]/div/div[2]/button[1]'
+        element_present = EC.presence_of_element_located((By.XPATH, x_path))
+        WebDriverWait(driver, 15).until(element_present)
+        button = driver.find_element_by_xpath(x_path)
+        button.click()
         element_present = EC.presence_of_element_located((By.ID, 'identifierNext'))
         WebDriverWait(driver, 15).until(element_present)
         # 2. Enter email
