@@ -39,12 +39,7 @@ async def get_schedule(user_id, email, pwd):
 
     try:
         # 1. Do Google login
-        driver.get("https://stackoverflow.com/users/login")
-        x_path = '/html/body/div[3]/div[2]/div/div[2]/button[1]'
-        element_present = EC.presence_of_element_located((By.XPATH, x_path))
-        WebDriverWait(driver, 15).until(element_present)
-        button = driver.find_element_by_xpath(x_path)
-        button.click()
+        driver.get("https://accounts.google.com/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin")
         element_present = EC.presence_of_element_located((By.ID, 'identifierNext'))
         WebDriverWait(driver, 15).until(element_present)
         # 2. Enter email
