@@ -233,6 +233,8 @@ async def guess(ctx, *, extra):
             await ctx.reply(embed=embed_game_ended)
             return
 
+        a = 'b'
+
         if str(symbol) == emojis_c[0]:
             a = 'y'
         elif str(symbol) == emojis_c[1]:
@@ -295,3 +297,28 @@ async def guess(ctx, *, extra):
                                    description=desc_loss,
                                    color=0xFF0000)
         await ctx.reply(embed=embed_loss)
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        title_error_one = 'You have not entered anything after the command'
+        desc_error_one = 'Use **!!help** to see a list of all the game modes available'
+        embed_var_one = discord.Embed(title=title_error_one,
+                                      description=desc_error_one,
+                                      color=0xFF0000)
+        await ctx.reply(embed=embed_var_one)
+    if isinstance(error, commands.CommandNotFound):
+        title_error_two = 'The command you have entered does not exist'
+        desc_error_two = 'Use **!!help** to see a list of all the commands available'
+        embed_var_two = discord.Embed(title=title_error_two,
+                                      description=desc_error_two,
+                                      color=0xFF0000)
+        await ctx.reply(embed=embed_var_two)
+    if isinstance(error, commands.MaxConcurrencyReached):
+        title_error_four = 'Someone is already playing'
+        desc_error_four = 'Please wait until the person currently playing is done with their turn'
+        embed_var_four = discord.Embed(title=title_error_four,
+                                       description=desc_error_four,
+                                       color=0xFF0000)
+        await ctx.reply(embed=embed_var_four)
