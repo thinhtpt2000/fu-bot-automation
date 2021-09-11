@@ -26,6 +26,7 @@ emojis_w = ['✅', '❌']
 load_dotenv()
 channel_id = os.getenv('GUESS_GAME_CHANNEL')
 
+
 def run():
     TOKEN = os.getenv('DISCORD_TOKEN')
     bot.run(TOKEN)
@@ -184,6 +185,7 @@ async def cal_mas(ctx, *, query):
 @bot.command(name='guess')
 @commands.max_concurrency(1, per=BucketType.default, wait=False)
 async def guess(ctx, *, extra):
+    print(ctx.channel.id)
     if ctx.channel.id == channel_id:
         desc_loss = ''
         d_loss = ''
