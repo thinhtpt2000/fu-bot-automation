@@ -185,7 +185,6 @@ async def cal_mas(ctx, *, query):
 @bot.command(name='guess')
 @commands.max_concurrency(1, per=BucketType.default, wait=False)
 async def guess(ctx, *, extra):
-    print(ctx.channel.id)
     if ctx.channel.id == channel_id:
         desc_loss = ''
         d_loss = ''
@@ -237,7 +236,7 @@ async def guess(ctx, *, extra):
                 await ctx.reply(embed=embed_game_ended)
                 return
 
-            a = 'b'
+            a = ''
 
             if str(symbol) == emojis_c[0]:
                 a = 'y'
