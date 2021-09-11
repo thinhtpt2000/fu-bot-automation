@@ -1,10 +1,14 @@
 # bot.py
+import asyncio
 import os
 from asyncio import TimeoutError
 from sqlite3 import IntegrityError
+import akinator
+from akinator.async_aki import Akinator
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import BucketType
 from dotenv import load_dotenv
 from selenium.common.exceptions import WebDriverException
 
@@ -16,11 +20,21 @@ import timeit
 
 bot = commands.Bot(command_prefix='!!')
 
+emojis_c = ['✅', '❌', '🤷', '👍', '👎', '⏮', '🛑']
+emojis_w = ['✅', '❌']
+
 
 def run():
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
     bot.run(TOKEN)
+
+
+def w(name, desc, picture):
+    embed_win = discord.Embed(title=f"It's {name} ({desc})! Was I correct?",
+                              colour=0x00FF00)
+    embed_win.set_image(url=picture)
+    return embed_win
 
 
 @bot.event
@@ -53,7 +67,7 @@ async def schedule(ctx):
     except ValueError as err:
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
     except WebDriverException:
-        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)
+        await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
 
 
 @bot.command(help='Check schedule with Google access token')
@@ -70,7 +84,7 @@ async def schedule_with_token(ctx, access_token=None):
         print(err)
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
     except WebDriverException:
-        await ctx.channel.send('Error with code: ' + BotStatus.START_FAILED + ' ' + mention)
+        await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
 
 
 @bot.command(help='Create new FAP account')
@@ -164,3 +178,120 @@ async def cal_mas(ctx, *, query):
         await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
     except WebDriverException:
         await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
+
+
+@bot.command(name='guess')
+@commands.max_concurrency(1, per=BucketType.default, wait=False)
+async def guess(ctx, *, extra):
+    desc_loss = ''
+    d_loss = ''
+    aki = Akinator()
+
+    def check_c(reaction, user):
+        return user == ctx.author and str(
+            reaction.emoji) in emojis_c and reaction.message.content == q
+
+    def check_w(reaction, user):
+        return user == ctx.author and str(reaction.emoji) in emojis_w
+
+    async with ctx.typing():
+        if extra == 'people':
+            q = await aki.start_game(child_mode=True)
+        elif extra == 'objects' or extra == 'animals':
+            q = await aki.start_game(language=f'en_{extra}',
+                                     child_mode=True)
+        else:
+            title_error_three = 'This game mode does not exist'
+            desc_error_three = 'Use **.help** to see a list of all the game modes available'
+            embed_var_three = discord.Embed(title=title_error_three,
+                                            description=desc_error_three,
+                                            color=0xFF0000)
+            await ctx.reply(embed=embed_var_three)
+            return
+
+        embed_question = discord.Embed(
+            title=
+            'Tip : Wait until all emojis finish being added before reacting'
+            ' or you will have to unreact and react again',
+            color=0x00FF00)
+        await ctx.reply(embed=embed_question)
+
+    while aki.progression <= 85:
+        message = await ctx.reply(q)
+
+        for m in emojis_c:
+            await message.add_reaction(m)
+
+        try:
+            symbol, username = await bot.wait_for('reaction_add',
+                                                  timeout=45.0,
+                                                  check=check_c)
+        except asyncio.TimeoutError:
+            embed_game_ended = discord.Embed(
+                title='You took too long,the game has ended',
+                color=0xFF0000)
+            await ctx.reply(embed=embed_game_ended)
+            return
+
+        if str(symbol) == emojis_c[0]:
+            a = 'y'
+        elif str(symbol) == emojis_c[1]:
+            a = 'n'
+        elif str(symbol) == emojis_c[2]:
+            a = 'idk'
+        elif str(symbol) == emojis_c[3]:
+            a = 'p'
+        elif str(symbol) == emojis_c[4]:
+            a = 'pn'
+        elif str(symbol) == emojis_c[5]:
+            a = 'b'
+        elif str(symbol) == emojis_c[6]:
+            embed_game_end = discord.Embed(
+                title='I ended the game because you asked me to do it',
+                color=0x00FF00)
+            await ctx.reply(embed=embed_game_end)
+            return
+
+        if a == "b":
+            try:
+                q = await aki.back()
+            except akinator.CantGoBackAnyFurther:
+                pass
+        else:
+            q = await aki.answer(a)
+
+    await aki.win()
+
+    wm = await ctx.reply(
+        embed=w(aki.first_guess['name'], aki.first_guess['description'],
+                aki.first_guess['absolute_picture_path']))
+
+    for e in emojis_w:
+        await wm.add_reaction(e)
+
+    try:
+        s, u = await bot.wait_for('reaction_add',
+                                  timeout=30.0,
+                                  check=check_w)
+    except asyncio.TimeoutError:
+        for times in aki.guesses:
+            d_loss = d_loss + times['name'] + '\n'
+        t_loss = 'Here is a list of all the people I had in mind :'
+        embed_loss = discord.Embed(title=t_loss,
+                                   description=d_loss,
+                                   color=0xFF0000)
+        await ctx.reply(embed=embed_loss)
+        return
+
+    if str(s) == emojis_w[0]:
+        embed_win = discord.Embed(
+            title='Great, guessed right one more time!', color=0x00FF00)
+        await ctx.reply(embed=embed_win)
+    elif str(s) == emojis_w[1]:
+        for times in aki.guesses:
+            desc_loss = desc_loss + times['name'] + '\n'
+        title_loss = 'No problem, I will win next time! But here is a list of all the people I had in mind :'
+        embed_loss = discord.Embed(title=title_loss,
+                                   description=desc_loss,
+                                   color=0xFF0000)
+        await ctx.reply(embed=embed_loss)
