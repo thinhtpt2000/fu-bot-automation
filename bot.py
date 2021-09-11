@@ -91,7 +91,7 @@ async def schedule_with_token(ctx, access_token=None):
         await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
 
 
-@bot.command(name='f_sch', help='Check schedule with cookie')
+@bot.command(name='ftime', help='Check schedule with cookie')
 async def schedule_with_cookie(ctx, app_id):
     start = timeit.default_timer()
     await ctx.channel.send('Finding weekly schedule with given id')
@@ -181,7 +181,7 @@ async def ping(ctx):
     await ctx.channel.send(f'Latency: {b_latency}ms {mention}')
 
 
-@bot.command(name='cmas', pass_context=True)
+@bot.command(name='qa', pass_context=True)
 async def cal_mas(ctx, *, query):
     mention = ctx.author.mention
     try:

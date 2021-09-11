@@ -24,7 +24,6 @@ def get_headless_options():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--user-agent="Mozilla/5.0 (X11; Linux x86_64; Windows NT 10.0; Win64; x64) '
                                 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"')
-    chrome_options.add_argument("user-data-dir=./")  # Path to your chrome profile
     chrome_options.binary_location = os.getenv("GOOGLE_CHROME_BIN")
     return chrome_options
 
@@ -35,12 +34,6 @@ async def get_schedule(user_id, email, pwd):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        params = {
-            "latitude": 10.847133,
-            "longitude": 106.828560,
-            "accuracy": 100
-        }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -135,12 +128,6 @@ async def get_schedule_by_cookie(user_id, app_id):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        params = {
-            "latitude": 10.847133,
-            "longitude": 106.828560,
-            "accuracy": 100
-        }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -193,12 +180,6 @@ async def get_schedule_by_token(user_id, access_token):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        params = {
-            "latitude": 10.847133,
-            "longitude": 106.828560,
-            "accuracy": 100
-        }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -237,12 +218,6 @@ async def request_wolfram_alpha(user_id, query):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        params = {
-            "latitude": 10.847133,
-            "longitude": 106.828560,
-            "accuracy": 100
-        }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
     # 1. Navigate to wolfram alpha page
