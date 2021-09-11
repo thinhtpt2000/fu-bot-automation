@@ -236,8 +236,6 @@ async def guess(ctx, *, extra):
                 await ctx.reply(embed=embed_game_ended)
                 return
 
-            a = ''
-
             if str(symbol) == emojis_c[0]:
                 a = 'y'
             elif str(symbol) == emojis_c[1]:
