@@ -24,7 +24,7 @@ emojis_c = ['✅', '❌', '🤷', '👍', '👎', '⏮', '🛑']
 emojis_w = ['✅', '❌']
 
 load_dotenv()
-channel_id = os.getenv('GUESS_GAME_CHANNEL')
+channel_id = int(os.getenv('GUESS_GAME_CHANNEL'))
 
 aki = Akinator()
 
@@ -187,8 +187,6 @@ async def cal_mas(ctx, *, query):
 @bot.command(name='guess')
 @commands.max_concurrency(1, per=BucketType.default, wait=False)
 async def guess(ctx, *, extra):
-    print(ctx.channel.id == channel_id)
-    print(type(ctx.channel.id) + 'vs' + type(channel_id))
     if ctx.channel.id == channel_id:
         desc_loss = ''
         d_loss = ''
