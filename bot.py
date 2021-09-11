@@ -26,6 +26,8 @@ emojis_w = ['✅', '❌']
 load_dotenv()
 channel_id = os.getenv('GUESS_GAME_CHANNEL')
 
+aki = Akinator()
+
 
 def run():
     TOKEN = os.getenv('DISCORD_TOKEN')
@@ -188,7 +190,6 @@ async def guess(ctx, *, extra):
     if ctx.channel.id == channel_id:
         desc_loss = ''
         d_loss = ''
-        aki = Akinator()
 
         def check_c(reaction, user):
             return user == ctx.author and str(
