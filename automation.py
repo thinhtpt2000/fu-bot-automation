@@ -80,7 +80,7 @@ async def get_schedule(user_id, email, pwd):
         raise RuntimeError(BotStatus.ELEMENT_CHANGED)
     except TimeoutException:
         driver.save_screenshot(f'{user_id}.png')
-        # driver.quit()
+        driver.quit()
         raise RuntimeError(BotStatus.TIME_OUT)
 
     # 6. Navigate to FAP page
