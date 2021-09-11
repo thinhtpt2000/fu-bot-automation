@@ -34,6 +34,12 @@ async def get_schedule(user_id, email, pwd):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        params = {
+            "latitude": 10.847133,
+            "longitude": 106.828560,
+            "accuracy": 100
+        }
+        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -130,6 +136,12 @@ async def get_schedule_by_token(user_id, access_token):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        params = {
+            "latitude": 10.847133,
+            "longitude": 106.828560,
+            "accuracy": 100
+        }
+        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -168,6 +180,12 @@ async def request_wolfram_alpha(user_id, query):
     try:
         # Apply driver
         driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        params = {
+            "latitude": 10.847133,
+            "longitude": 106.828560,
+            "accuracy": 100
+        }
+        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
     # 1. Navigate to wolfram alpha page
