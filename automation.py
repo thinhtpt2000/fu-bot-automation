@@ -39,7 +39,7 @@ async def get_schedule(user_id, email, pwd):
             "longitude": 106.828560,
             "accuracy": 100
         }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
+        driver.execute_cdp_cmd("Emulation.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -141,7 +141,7 @@ async def get_schedule_by_token(user_id, access_token):
             "longitude": 106.828560,
             "accuracy": 100
         }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
+        driver.execute_cdp_cmd("Emulation.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
 
@@ -185,7 +185,7 @@ async def request_wolfram_alpha(user_id, query):
             "longitude": 106.828560,
             "accuracy": 100
         }
-        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
+        driver.execute_cdp_cmd("Emulation.setGeolocationOverride", params)
     except RuntimeError:
         raise RuntimeError(BotStatus.START_FAILED)
     # 1. Navigate to wolfram alpha page
