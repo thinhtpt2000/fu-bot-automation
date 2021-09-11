@@ -129,6 +129,62 @@ async def get_schedule(user_id, email, pwd):
     return BotStatus.END_SUCCESS, name
 
 
+async def get_schedule_by_cookie(user_id, app_id):
+    # Setting options
+    chrome_options = get_headless_options()
+    try:
+        # Apply driver
+        driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        params = {
+            "latitude": 10.847133,
+            "longitude": 106.828560,
+            "accuracy": 100
+        }
+        driver.execute_cdp_cmd("Page.setGeolocationOverride", params)
+    except RuntimeError:
+        raise RuntimeError(BotStatus.START_FAILED)
+
+    # 1. Navigate to FAP page
+    driver.get("https://fap.fpt.edu.vn/")
+    driver.add_cookie({"name": "ASP.NET_SessionId", "value": app_id})
+
+    try:
+        element_present = EC.presence_of_element_located((By.ID, 'ctl00_mainContent_ddlCampus'))
+        WebDriverWait(driver, 15).until(element_present)
+        # 8. Select campus
+        select = Select(driver.find_element_by_id('ctl00_mainContent_ddlCampus'))
+        select.select_by_visible_text('FU-Hồ Chí Minh')
+        # 9. Click Google login
+        element_present = EC.presence_of_element_located((By.CLASS_NAME, 'abcRioButtonIcon'))
+        WebDriverWait(driver, 15).until(element_present)
+        # 10. Navigate to schedule page
+        driver.get('https://fap.fpt.edu.vn/Report/ScheduleOfWeek.aspx')
+        x_path = '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table'
+        element_present = EC.presence_of_element_located((By.XPATH, x_path))
+        WebDriverWait(driver, 15).until(element_present)
+        # 11. Set window size
+        driver.set_window_size(1000, 1000)
+        driver.fullscreen_window()
+        element = driver.find_element_by_xpath(x_path)
+        # 12. Save & exit
+        name = f'{user_id}_{round(time.time() * 1000)}.png'
+        png = element.screenshot_as_png
+        img = Image.open(BytesIO(png))
+        img.save(name)
+    except RuntimeError:
+        driver.save_screenshot(f'{user_id}.png')
+        raise RuntimeError(BotStatus.LOGIN_FAILED)
+    except NoSuchElementException:
+        driver.save_screenshot(f'{user_id}.png')
+        raise RuntimeError(BotStatus.ELEMENT_CHANGED)
+    except TimeoutException:
+        driver.save_screenshot(f'{user_id}.png')
+        raise RuntimeError(BotStatus.TIME_OUT)
+    finally:
+        driver.quit()
+    return BotStatus.END_SUCCESS, name
+
+
 async def get_schedule_by_token(user_id, access_token):
     if access_token is None or access_token == '':
         raise RuntimeError(BotStatus.LOGIN_FAILED)

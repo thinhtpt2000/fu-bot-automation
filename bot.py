@@ -91,6 +91,25 @@ async def schedule_with_token(ctx, access_token=None):
         await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
 
 
+@bot.command(name='f_sch', help='Check schedule with cookie')
+async def schedule_with_cookie(ctx, app_id):
+    start = timeit.default_timer()
+    await ctx.channel.send('Finding weekly schedule with given id')
+    mention = ctx.author.mention
+    try:
+        result, name = await automation.get_schedule_by_cookie(ctx.author, app_id)
+        stop = timeit.default_timer()
+        if result == BotStatus.END_SUCCESS:
+            await ctx.channel.send(f'Done in {round(stop - start, 2)}s, {mention}!', file=discord.File(name))
+        else:
+            await ctx.channel.send(f'Not found data {mention}!')
+    except RuntimeError as err:
+        print(err)
+        await ctx.channel.send('Error with code: ' + str(err) + ' ' + mention)
+    except WebDriverException:
+        await ctx.channel.send('Error with code: ' + str(BotStatus.START_FAILED) + ' ' + mention)
+
+
 @bot.command(help='Create new FAP account')
 async def register(ctx):
     def check_direct_msg(msg: discord.Message):
